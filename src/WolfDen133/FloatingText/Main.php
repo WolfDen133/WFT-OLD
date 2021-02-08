@@ -121,10 +121,6 @@ class Main extends PluginBase implements Listener{
                                 $x = $entity->getX();
                                 $y = $entity->getY() + $data[1]/10;
                                 $z = $entity->getZ();
-                            } else {
-                                $x = 0;
-                                $y = 0;
-                                $z = 0;
                             }
                             $entity->close();
                         }
@@ -134,7 +130,7 @@ class Main extends PluginBase implements Listener{
                     $y = $y - $data[1]/10;
                     $this->createText($ftname, str_replace("&","§", $value), $player, $x, $y, $z);
                 }
-                $player->sendMessage(TextFormat::GREEN . "Edited the floating text " . TextFormat::RESET . $this->tempft . TextFormat::GREEN . " to:\n" . TextFormat::RESET . implode("\n", $text));
+                $player->sendMessage(TextFormat::GREEN . "Edited the floating text " . TextFormat::RESET . $ftname . TextFormat::GREEN . " to:\n" . TextFormat::RESET . implode("\n", $text));
             } else {
                 $player->sendMessage(TextFormat::RED . "Incorrect arguments, aborting...");
             }
