@@ -5,7 +5,7 @@ Unlike common other ft plugins, like texter, this is a easy to run, small, simpl
 
 You can use "#" for a line break, "&" for color formating, and unlike texter there is __LINE-SPACEING__
 
-Feel free to leave a suggestion [here](https://github.com/WolfDen133/WFT/issues)
+Feel free to leave a suggestion [here](https://github.com/WolfDen133/WFT/issues), make sure you title it "Suggestion(s)".
 
 ## Example
 ![Info](https://i.imgur.com/7UZQGWR.png)
