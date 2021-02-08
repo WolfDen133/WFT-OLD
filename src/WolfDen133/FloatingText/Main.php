@@ -81,13 +81,12 @@ class Main extends PluginBase implements Listener{
             }
             switch ($data){
                 case "close":
-                    return;
                     break;
                 default:
                     $this->openEdit($player, $data);
-                    return;
                     break;
             }
+            return;
         });
         $form->setTitle("Remove a FloatingText");
         $form->setContent("Below are all the floating texts that are in your current level, click one to edit it.");
@@ -122,6 +121,10 @@ class Main extends PluginBase implements Listener{
                                 $x = $entity->getX();
                                 $y = $entity->getY() + $data[1]/10;
                                 $z = $entity->getZ();
+                            } else {
+                                $x = 0;
+                                $y = 0;
+                                $z = 0;
                             }
                             $entity->close();
                         }
@@ -132,10 +135,8 @@ class Main extends PluginBase implements Listener{
                     $this->createText($ftname, str_replace("&","§", $value), $player, $x, $y, $z);
                 }
                 $player->sendMessage(TextFormat::GREEN . "Edited the floating text " . TextFormat::RESET . $this->tempft . TextFormat::GREEN . " to:\n" . TextFormat::RESET . implode("\n", $text));
-                $this->tempft = null;
             } else {
                 $player->sendMessage(TextFormat::RED . "Incorrect arguments, aborting...");
-                $this->tempft = null;
             }
 
 
@@ -164,7 +165,6 @@ class Main extends PluginBase implements Listener{
             }
             switch ($data){
                 case "close":
-                    return true;
                     break;
                 default:
                     $form = new ModalForm(function (Player $player, bool $cdata = null) use ($data){
@@ -190,6 +190,7 @@ class Main extends PluginBase implements Listener{
                     $form->sendToPlayer($player);
                     return $form;
             }
+            return true;
         });
         $form->setTitle("Remove a FloatingText");
         $form->setContent("Below are all the floating texts that are in your current level, click one to remove it.");
@@ -216,7 +217,6 @@ class Main extends PluginBase implements Listener{
             }
             switch ($data){
                 case "close":
-                    return;
                     break;
                 default:
                     if ($action === true){
@@ -239,7 +239,9 @@ class Main extends PluginBase implements Listener{
                             }
                         }
                     }
+                break;
             }
+            return;
         });
         if ($action === true) {
             $form->setTitle("Teleport to a FloatingText");
