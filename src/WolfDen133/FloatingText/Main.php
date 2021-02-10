@@ -10,6 +10,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityMotionEvent;
 use pocketmine\event\Listener;
 
+use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\nbt\tag\CompoundTag;
 
 use pocketmine\Player;
@@ -19,6 +20,7 @@ use pocketmine\plugin\PluginBase;
 use pocketmine\math\Vector3;
 
 use pocketmine\utils\TextFormat;
+use pocketmine\utils\Config;
 
 use WolfDen133\FloatingText\FormAPI\CustomForm;
 use WolfDen133\FloatingText\FormAPI\SimpleForm;
@@ -27,15 +29,54 @@ use WolfDen133\FloatingText\FormAPI\ModalForm;
 
 class Main extends PluginBase implements Listener{
 
+    /* @var Config */
+    private $config;
+
+    private $new;
 
     public function onEnable()
     {
+
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
 
         $this->getServer()->getCommandMap()->register("ft", new FloatingTextCommand($this));
 
+        $this->config = $this->getConfig();
+
+        $this->saveDefaultConfig();
+
+
+
+        if(!$this->config->exists("Update interval")){
+            mkdir($this->getDataFolder() . "fts/");
+
+            $this->config->set("Update interval", 120);
+            $this->config->save();
+        }
+
+        $ticks = $this->config->get("Update interval");
+
+        if ($ticks < 10){
+            $this->getServer()->getLogger()->notice("The update-interval($ticks) is set to less than 10 seconds, this could be intensive on your server");
+        }
+
+        $this->getScheduler()->scheduleRepeatingTask(new UpdateTask($this), $ticks*20);
+
         Entity::registerEntity(WFloatingText::class, true);
 
+        $this->new = true;
+
+    }
+
+    public function onDisable()
+    {
+        foreach ($this->getServer()->getLevels() as $level){
+            foreach ($level->getEntities() as $entity) {
+                if ($entity instanceof WFloatingText){
+                    $entity->close();
+                }
+            }
+        }
     }
 
     public function openCreation(Player $player){
@@ -52,13 +93,21 @@ class Main extends PluginBase implements Listener{
                 }
             }
             if ($data[1] !== "" and $data[0] !== ""){
-                $text = explode("#", $data[1]);
+                $ftconfig = new Config($this->getDataFolder() . "fts/" . $data[0] . ".yml", Config::YAML);
+                $ftconfig->set("name", $data[0]);
+                $ftconfig->set('x', $player->getX());
+                $ftconfig->set('y', $player->getY());
+                $ftconfig->set('z', $player->getZ());
+                $text = explode("#", (string)$data[1]);
+                $ftconfig->set('lines', $text);
+                $ftconfig->set("gap", $data[2]);
                 $y = $player->getY() + 1 + $data[2]/10;
                 foreach ($text as $value){
                     $y = $y - $data[2]/10;
-                    $this->createText($data[0], str_replace(["{line}", "&"], ["", "§"], $value), $player, $player->getX(), $y, $player->getZ());
+                    $this->createText($data[0], str_replace(["&"], ["§"], $value), $player, $player->getX(), $y, $player->getZ());
                 }
-                $player->sendMessage(TextFormat::GREEN . "Created:\n" . TextFormat::RESET . implode("\n", $text) . TextFormat::GREEN . ",\nfloating text with the name: " . TextFormat::RESET . $data[0]);
+                $ftconfig->save();
+                $player->sendMessage(TextFormat::GREEN . "Created:\n" . TextFormat::RESET . str_replace("&", "§",implode("\n", $text)) . TextFormat::RESET . TextFormat::GREEN . ",\nfloating text with the name: " . TextFormat::RESET . $data[0]);
             } else {
                 $player->sendMessage(TextFormat::RED . "Incorrect arguments, aborting...");
             }
@@ -81,12 +130,13 @@ class Main extends PluginBase implements Listener{
             }
             switch ($data){
                 case "close":
+                    return;
                     break;
                 default:
                     $this->openEdit($player, $data);
+                    return;
                     break;
             }
-            return;
         });
         $form->setTitle("Remove a FloatingText");
         $form->setContent("Below are all the floating texts that are in your current level, click one to edit it.");
@@ -96,7 +146,7 @@ class Main extends PluginBase implements Listener{
                 $ftname = $entity->namedtag->getString("FTName");
                 if(!isset($fts[$ftname])){
                     $fts[$ftname] = true;
-                    $form->addButton($ftname, -1, "", $ftname);
+                    if ($ftname !== "")$form->addButton($ftname, -1, "", $ftname);
                 }
             }
         }
@@ -126,11 +176,15 @@ class Main extends PluginBase implements Listener{
                         }
                     }
                 }
+                $ftconfig = new Config($this->getDataFolder() . "fts/" . $ftname . ".yml", Config::YAML);
+                $ftconfig->set("lines", $text);
+                $ftconfig->set("gap", $data[1]);
+                $ftconfig->save();
                 foreach ($text as $value){
                     $y = $y - $data[1]/10;
                     $this->createText($ftname, str_replace("&","§", $value), $player, $x, $y, $z);
                 }
-                $player->sendMessage(TextFormat::GREEN . "Edited the floating text " . TextFormat::RESET . $ftname . TextFormat::GREEN . " to:\n" . TextFormat::RESET . implode("\n", $text));
+                $player->sendMessage(TextFormat::GREEN . "Edited the floating text " . TextFormat::RESET . $ftname . TextFormat::RESET . TextFormat::GREEN . " to:\n" . TextFormat::RESET . str_replace("&", "§",implode("\n", $text)));
             } else {
                 $player->sendMessage(TextFormat::RED . "Incorrect arguments, aborting...");
             }
@@ -161,6 +215,7 @@ class Main extends PluginBase implements Listener{
             }
             switch ($data){
                 case "close":
+                    return true;
                     break;
                 default:
                     $form = new ModalForm(function (Player $player, bool $cdata = null) use ($data){
@@ -168,6 +223,7 @@ class Main extends PluginBase implements Listener{
                             return;
                         }
                         if($cdata === true){
+                            unlink($this->getDataFolder() . "fts/" . $data . ".yml");
                             foreach ($player->getLevel()->getEntities() as $entity){
                                 if ($entity instanceof WFloatingText){
                                     if ($entity->namedtag->getString("FTName") === $data){
@@ -186,7 +242,6 @@ class Main extends PluginBase implements Listener{
                     $form->sendToPlayer($player);
                     return $form;
             }
-            return true;
         });
         $form->setTitle("Remove a FloatingText");
         $form->setContent("Below are all the floating texts that are in your current level, click one to remove it.");
@@ -196,7 +251,7 @@ class Main extends PluginBase implements Listener{
                 $ftname = $entity->namedtag->getString("FTName");
                 if(!isset($fts[$ftname])){
                     $fts[$ftname] = true;
-                    $form->addButton($ftname, -1, "", $ftname);
+                    if ($ftname !== "")$form->addButton($ftname, -1, "", $ftname);
                 }
             }
         }
@@ -213,6 +268,7 @@ class Main extends PluginBase implements Listener{
             }
             switch ($data){
                 case "close":
+                    return;
                     break;
                 default:
                     if ($action === true){
@@ -226,18 +282,22 @@ class Main extends PluginBase implements Listener{
                         }
                     } else {
                         $y = $player->getY() + 1.3;
+                        $ftconfig = new Config($this->getDataFolder() . "fts/" . $data . ".yml", Config::YAML);
+                        $ftconfig->set('x', $player->getX());
+                        $ftconfig->set('y', $y);
+                        $ftconfig->set('z', $player->getZ());
+                        $ftconfig->save();
                         foreach ($player->getLevel()->getEntities() as $entity){
                             if ($entity instanceof WFloatingText) {
                                 if ($entity->namedtag->getString("FTName") === $data) {
                                     $y = $y - 0.3;
                                     $entity->teleport(new Vector3($player->getX(), $y, $player->getZ()));
+
                                 }
                             }
                         }
                     }
-                break;
             }
-            return;
         });
         if ($action === true) {
             $form->setTitle("Teleport to a FloatingText");
@@ -252,7 +312,7 @@ class Main extends PluginBase implements Listener{
                 $ftname = $entity->namedtag->getString("FTName");
                 if(!isset($fts[$ftname])){
                     $fts[$ftname] = true;
-                    $form->addButton($ftname, -1, "", $ftname);
+                    if ($ftname !== "")$form->addButton($ftname, -1, "", $ftname);
                 }
             }
         }
@@ -262,20 +322,29 @@ class Main extends PluginBase implements Listener{
         return $form;
     }
 
-    public function createText(string $ftname, string $text, Player $player, $x, $y, $z, $op = false)
+    # api
+
+    private function createText(string $ftname, string $text, Player $player, $x, $y, $z)
     {
         $nbt = $this->makeNBT("WFloatingText", $player, $text, $ftname, new Vector3($x, $y, $z));
-        $entity = Entity::createEntity("WFloatingText", $player->getLevel(), $nbt);
-        $entity->getDataPropertyManager()->setFloat(Entity::DATA_SCALE, 0);
-        $entity->sendData($entity->getViewers());
-        if ($op === true){
-            foreach ($this->getServer()->getOnlinePlayers() as $player){
-                if ($player->isOp()) $entity->spawnTo($player);
-            }
-        } else {
+        /* @var WFloatingText */
+            $entity = Entity::createEntity("WFloatingText", $player->getLevel(), $nbt);
+            $entity->getDataPropertyManager()->setFloat(Entity::DATA_SCALE, 0);
+            $entity->sendData($entity->getViewers());
             $entity->spawnToAll();
+            $this->reloadText($entity);
+    }
+
+    public function reloadText(WFloatingText $entity){
+        if ($entity instanceof WFloatingText){
+            $name = $entity->namedtag->getString("CustomName");
+            $name = $this->nameReplace($name, $entity);
+            $entity->setNameTag($name);
+        } else {
+            $this->getServer()->getLogger()->error("The entity class for reloadTexts was not type FloatingText");
         }
     }
+
 
     private function makeNBT($type, Player $player, $name, $ftname, Vector3 $pos): CompoundTag
     {
@@ -296,6 +365,38 @@ class Main extends PluginBase implements Listener{
         return $nbt;
     }
 
+    private function nameReplace(String $text, WFloatingText $floatingText){
+        $name = str_replace(["{max_players}", "{online_players}", "{level}", "{tps}", "{load}", "&"], [$this->getServer()->getMaxPlayers(), count($this->getServer()->getOnlinePlayers()), $floatingText->getLevel()->getName(), $this->getServer()->getTicksPerSecondAverage(), $this->getServer()->getTickUsage(), "§"], $text);
+        return $name;
+    }
+
+    public function reloadTexts(Player $sender){
+        foreach ($this->getServer()->getLevels() as $level){
+            foreach ($level->getEntities() as $entity){
+                if ($entity instanceof WFloatingText){
+                    $entity->close();
+                }
+            }
+        }
+        $directory = new \RecursiveDirectoryIterator($this->getDataFolder());
+        $iterator = new \RecursiveIteratorIterator($directory);
+        foreach ($iterator as $info) {
+            $value = new Config($info->getPathname());
+            if ($info->getPathname() !== $this->getDataFolder() . "config.yml" || $value->get("name") !== ""){
+                $x = (int)$value->get("x");
+                $y = (int)$value->get("y") + (int)$value->get("gap")/10;
+                $z = (int)$value->get("z");
+                $name = (string)$value->get("name");
+                foreach ((array) $value->get("lines") as $line){
+                    $y = $y - (int)$value->get("gap")/10;
+                    $this->createText($name, (string)$line, $sender, $x, $y, $z);
+                }
+            }
+        }
+    }
+
+    # events
+
     public function onDamage(EntityDamageEvent $event){
         if ($event->getEntity() instanceof WFloatingText){
             $event->setCancelled(true);
@@ -306,6 +407,27 @@ class Main extends PluginBase implements Listener{
         $entity = $event->getEntity();
         if ($entity instanceof WFloatingText) {
             $event->setCancelled(true);
+        }
+    }
+
+    public function onJoin(PlayerJoinEvent $event){
+        if ($this->new === true){
+            $this->new = false;
+            $directory = new \RecursiveDirectoryIterator($this->getDataFolder());
+            $iterator = new \RecursiveIteratorIterator($directory);
+            foreach ($iterator as $info) {
+                $value = new Config($info->getPathname());
+                if ($info->getPathname() !== $this->getDataFolder() . "config.yml" || $value->get("name") !== ""){
+                    $x = (int)$value->get("x");
+                    $y = (int)$value->get("y") + (int)$value->get("gap")/10;
+                    $z = (int)$value->get("z");
+                    $name = (string)$value->get("name");
+                    foreach ((array) $value->get("lines") as $line){
+                        $y = $y - (int)$value->get("gap")/10;
+                        $this->createText($name, (string)$line, $event->getPlayer(), $x, $y, $z);
+                    }
+                }
+            }
         }
     }
 }
