@@ -1,5 +1,24 @@
-# WFT
-A custom floating text plugin for pocketmine 3.0.0 and up.
+# WFT 1.3.0-BETA
+
+Whats new? 
+
+Added: 
+  Refresh timer, tags(as seen below), config saving/editing, /ft reload command.
+  Bug fixes, still more tho.
+  
+  ### Tags
+  Tag|Description
+  -|-
+  {max_players}|shows the max players allowed on the server
+  {online_players}|shows the online players on the server
+  {level}|shows the level name
+  {tps}|shows the servers tps
+  {load}|shows the servers load
+  --------
+  More coming soon...
+  
+## Info
+WFT is a custom floating text plugin for pocketmine 3.0.0 and up.
 
 Unlike common other ft plugins, like texter, this is a easy to run, small, simple and cool plugin to use.
 
