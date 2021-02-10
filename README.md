@@ -40,3 +40,8 @@ ft remove|ft.remove
 ft edit|ft.edit
 ft tp|ft.tp
 ft tphere|ft.tphere
+
+## Bugs
+Known bugs are currently that:
+  
+  Will sometimes move text slightly when reloading (unfixed)
