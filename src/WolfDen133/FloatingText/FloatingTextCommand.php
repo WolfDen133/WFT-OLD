@@ -76,11 +76,11 @@ class FloatingTextCommand extends Command {
                                 $sender->sendMessage(TextFormat::RED . "> You do not have permission to use this command!");
                             }
                         default:
-                            $sender->sendMessage(TextFormat::GRAY . "Ussage: ft {add/remove/edit}");
+                            $sender->sendMessage(TextFormat::GRAY . "Usage: ft {add/remove/edit/tp/tphere}");
                          break;
                     }
                 } else {
-                    $sender->sendMessage("Ussage: ft {add/remove/edit}");
+                    $sender->sendMessage("Usage: ft {add/remove/edit/tp/tphere}");
                 }
             } else {
                 $sender->sendMessage(TextFormat::RED . "> You do not have permission to use this command!");
