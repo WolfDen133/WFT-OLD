@@ -3,7 +3,7 @@
 Whats new? 
 
 Added: 
-  Refresh timer, tags(as seen below), config saving/editing, /ft reload command.
+  Refresh timer, tags(as seen below), config saving/editing, /ft reload command, /ft name command (gets the name of the ft when clicked).
   Bug fixes, still more tho.
   
   ### Tags
@@ -33,14 +33,17 @@ feel free to message me on discord as well [WolfDen133#4974](https://dsc.bio/Wol
 
 ## Commands
 
-Command | Permission
+Master command is ft|ft.master
+
+Subcommand | Permission
 ---------|----------
-ft|ft.master
-ft add|ft.add
-ft remove|ft.remove
-ft edit|ft.edit
-ft tp|ft.tp
-ft tphere|ft.tphere
+add|ft.add
+remove|ft.remove
+edit|ft.edit
+tp|ft.tp
+tphere|ft.tphere
+reload|ft.reload
+name|ft.name
 
 ## Bugs
 Known bugs are currently that:
