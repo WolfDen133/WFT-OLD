@@ -48,4 +48,4 @@ name|ft.name
 ## Bugs
 Known bugs are currently that:
   
-  Will sometimes move text slightly when reloading (unfixed)
+  Will sometimes move text slightly when reloading (fixed)
