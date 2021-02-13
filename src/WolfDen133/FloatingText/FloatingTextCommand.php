@@ -32,6 +32,7 @@ class FloatingTextCommand extends Command {
                         case "summon":
                         case "new":
                         case "make":
+                        case "create":
                             if ($sender->hasPermission("wft.add")) {
                                 $this->plugin->openCreation($sender);
                             } else {
@@ -51,6 +52,13 @@ class FloatingTextCommand extends Command {
                         case "edit":
                             if ($sender->hasPermission("wft.edit")) {
                                 $this->plugin->openEditList($sender);
+                            } else {
+                                $sender->sendMessage(TextFormat::RED . "> You do not have permission to use this command!");
+                            }
+                        break;
+                        case "reload":
+                            if ($sender->hasPermission("wft.reload")) {
+                                $this->plugin->reloadTexts($sender);
                             } else {
                                 $sender->sendMessage(TextFormat::RED . "> You do not have permission to use this command!");
                             }
@@ -75,9 +83,20 @@ class FloatingTextCommand extends Command {
                             } else {
                                 $sender->sendMessage(TextFormat::RED . "> You do not have permission to use this command!");
                             }
+                            break;
+                        case "name":
+                        case "id":
+                        case "whois":
+                            if ($sender->hasPermission("wft.name")) {
+                                $this->plugin->idlist[$sender->getName()] = true;
+                                $sender->sendMessage(TextFormat::GREEN . "Tap on/slightly below a text to get its name");
+                            } else {
+                                $sender->sendMessage(TextFormat::RED . "> You do not have permission to use this command!");
+                            }
+                        break;
                         default:
                             $sender->sendMessage(TextFormat::GRAY . "Usage: ft {add/remove/edit/tp/tphere}");
-                         break;
+                            break;
                     }
                 } else {
                     $sender->sendMessage("Usage: ft {add/remove/edit/tp/tphere}");
