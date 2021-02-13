@@ -8,6 +8,7 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\entity\Entity;
 
+use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityMotionEvent;
 use pocketmine\event\Listener;
@@ -35,6 +36,9 @@ class Main extends PluginBase implements Listener{
     private $config;
 
     private $new;
+
+    /* @var array */
+    public $idlist = [];
 
     public function onEnable()
     {
@@ -410,9 +414,9 @@ class Main extends PluginBase implements Listener{
         foreach ($iterator as $info) {
             $value = new Config($info->getPathname());
             if ($value->get("visible") === true){
-                $x = (int)$value->get("x");
-                $y = (int)$value->get("y") + (int)$value->get("gap")/10;
-                $z = (int)$value->get("z");
+                $x = (float)$value->get("x");
+                $y = (float)$value->get("y") + (int)$value->get("gap")/10;
+                $z = (float)$value->get("z");
                 $level = (string)$value->get("level");
                 $name = (string)$value->get("name");
                 foreach ((array) $value->get("lines") as $line){
@@ -425,9 +429,13 @@ class Main extends PluginBase implements Listener{
 
     # events
 
-    public function onDamage(EntityDamageEvent $event){
+    public function onDamage(EntityDamageByEntityEvent $event){
         if ($event->getEntity() instanceof WFloatingText){
             $event->setCancelled(true);
+            if ($event->getDamager() instanceof Player && isset($this->idlist[$event->getDamager()->getName()])){
+                $event->getDamager()->sendMessage(TextFormat::GREEN . "The name for this ft is: " . $event->getEntity()->namedtag->getString("FTName"));
+                unset($this->idlist[$event->getDamager()->getName()]);
+            }
         }
     }
 
@@ -454,9 +462,9 @@ class Main extends PluginBase implements Listener{
                 $value = new Config($info->getPathname());
                 $level = (string)$value->get("level");
                 if ($value->get("visible") === true){
-                    $x = (int)$value->get("x");
-                    $y = (int)$value->get("y") + (int)$value->get("gap")/10;
-                    $z = (int)$value->get("z");
+                    $x = (float)$value->get("x");
+                    $y = (float)$value->get("y") + (int)$value->get("gap")/10;
+                    $z = (float)$value->get("z");
                     $name = (string)$value->get("name");
                     // $this->getServer()->getLogger()->notice("Found the text $name with the text " . implode("#", $value->get("lines")) . " at $x, $y, $z, in the level $level");
                     foreach ((array) $value->get("lines") as $line){
