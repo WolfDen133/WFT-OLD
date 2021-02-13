@@ -1,4 +1,4 @@
-# WFT 1.3.0-BETA
+# WFT 1.3.1-BETA
 
 Whats new? 
 
