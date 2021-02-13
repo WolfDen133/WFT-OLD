@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace WolfDen133\FloatingText;
 
+use pocketmine\command\Command;
+use pocketmine\command\CommandSender;
 use pocketmine\entity\Entity;
 
 use pocketmine\event\entity\EntityDamageEvent;
@@ -62,17 +64,26 @@ class Main extends PluginBase implements Listener{
 
         $this->getScheduler()->scheduleRepeatingTask(new UpdateTask($this), $ticks*20);
 
+        $this->getServer()->getLogger()->info("Started task with " . $ticks*20 . " ticks.");
+
         Entity::registerEntity(WFloatingText::class, true);
 
         $this->new = true;
 
     }
 
+    public function onLoad()
+    {
+
+    }
+
+
     public function onDisable()
     {
         foreach ($this->getServer()->getLevels() as $level){
             foreach ($level->getEntities() as $entity) {
                 if ($entity instanceof WFloatingText){
+                    if (!$this->getServer()->isLevelLoaded($level->getName())) $this->getServer()->loadLevel($level->getName());
                     $entity->close();
                 }
             }
@@ -94,10 +105,12 @@ class Main extends PluginBase implements Listener{
             }
             if ($data[1] !== "" and $data[0] !== ""){
                 $ftconfig = new Config($this->getDataFolder() . "fts/" . $data[0] . ".yml", Config::YAML);
+                $ftconfig->set("visible", true);
                 $ftconfig->set("name", $data[0]);
                 $ftconfig->set('x', $player->getX());
-                $ftconfig->set('y', $player->getY());
+                $ftconfig->set('y', $player->getY() + 1);
                 $ftconfig->set('z', $player->getZ());
+                $ftconfig->set('level', $player->getLevel()->getName());
                 $text = explode("#", (string)$data[1]);
                 $ftconfig->set('lines', $text);
                 $ftconfig->set("gap", $data[2]);
@@ -286,6 +299,7 @@ class Main extends PluginBase implements Listener{
                         $ftconfig->set('x', $player->getX());
                         $ftconfig->set('y', $y);
                         $ftconfig->set('z', $player->getZ());
+                        $ftconfig->set('level', $player->getLevel()->getName());
                         $ftconfig->save();
                         foreach ($player->getLevel()->getEntities() as $entity){
                             if ($entity instanceof WFloatingText) {
@@ -324,22 +338,35 @@ class Main extends PluginBase implements Listener{
 
     # api
 
-    private function createText(string $ftname, string $text, Player $player, $x, $y, $z)
+    private function createText(string $ftname, string $text, Player $player, $x, $y, $z, $level = null)
     {
         $nbt = $this->makeNBT("WFloatingText", $player, $text, $ftname, new Vector3($x, $y, $z));
         /* @var WFloatingText */
-            $entity = Entity::createEntity("WFloatingText", $player->getLevel(), $nbt);
+            if ($level === null){
+                $chunk = $player->getLevel()->getChunkAtPosition(new Vector3($x, $y, $z));
+                $player->getLevel()->loadChunk($chunk->getX(), $chunk->getZ());
+                $entity = Entity::createEntity("WFloatingText", $player->getLevel(), $nbt);
+            } else {
+                if (!$this->getServer()->isLevelLoaded($level)) $this->getServer()->loadLevel($level);
+                $chunk = $this->getServer()->getLevelByName($level)->getChunkAtPosition(new Vector3($x, $y, $z));
+                if (!$this->getServer()->getLevelByName($level)->isChunkLoaded($chunk->getX(), $chunk->getZ())) $this->getServer()->getLevelByName($level)->loadChunk($chunk->getX(), $chunk->getZ());
+                $entity = Entity::createEntity("WFloatingText", $this->getServer()->getLevelByName($level), $nbt);
+                // $this->getServer()->getLogger()->notice("Tried to create the text $ftname with the text $text at $x, $y, $z, in the level $level, but couldn't");
+            }
             $entity->getDataPropertyManager()->setFloat(Entity::DATA_SCALE, 0);
             $entity->sendData($entity->getViewers());
             $entity->spawnToAll();
             $this->reloadText($entity);
+            return $entity;
     }
 
     public function reloadText(WFloatingText $entity){
         if ($entity instanceof WFloatingText){
-            $name = $entity->namedtag->getString("CustomName");
-            $name = $this->nameReplace($name, $entity);
-            $entity->setNameTag($name);
+            if ($entity->namedtag->hasTag("CustomName")) {
+                $name = $entity->namedtag->getString("CustomName");
+                $name = $this->nameReplace($name, $entity);
+                $entity->setNameTag($name);
+            }
         } else {
             $this->getServer()->getLogger()->error("The entity class for reloadTexts was not type FloatingText");
         }
@@ -378,18 +405,19 @@ class Main extends PluginBase implements Listener{
                 }
             }
         }
-        $directory = new \RecursiveDirectoryIterator($this->getDataFolder());
+        $directory = new \RecursiveDirectoryIterator($this->getDataFolder() . "fts/");
         $iterator = new \RecursiveIteratorIterator($directory);
         foreach ($iterator as $info) {
             $value = new Config($info->getPathname());
-            if ($info->getPathname() !== $this->getDataFolder() . "config.yml" || $value->get("name") !== ""){
+            if ($value->get("visible") === true){
                 $x = (int)$value->get("x");
                 $y = (int)$value->get("y") + (int)$value->get("gap")/10;
                 $z = (int)$value->get("z");
+                $level = (string)$value->get("level");
                 $name = (string)$value->get("name");
                 foreach ((array) $value->get("lines") as $line){
                     $y = $y - (int)$value->get("gap")/10;
-                    $this->createText($name, (string)$line, $sender, $x, $y, $z);
+                    $this->createText($name, (string)$line, $sender, $x, $y, $z, $level);
                 }
             }
         }
@@ -410,21 +438,31 @@ class Main extends PluginBase implements Listener{
         }
     }
 
+    public function onCommand(CommandSender $sender, Command $command, string $label, array $args): bool
+    {
+        if ($command->getName() === "reload"){
+            if ($sender instanceof Player) $this->reloadTexts($sender);
+        }
+    }
+
     public function onJoin(PlayerJoinEvent $event){
         if ($this->new === true){
             $this->new = false;
-            $directory = new \RecursiveDirectoryIterator($this->getDataFolder());
+            $directory = new \RecursiveDirectoryIterator($this->getDataFolder() . "fts/");
             $iterator = new \RecursiveIteratorIterator($directory);
             foreach ($iterator as $info) {
                 $value = new Config($info->getPathname());
-                if ($info->getPathname() !== $this->getDataFolder() . "config.yml" || $value->get("name") !== ""){
+                $level = (string)$value->get("level");
+                if ($value->get("visible") === true){
                     $x = (int)$value->get("x");
                     $y = (int)$value->get("y") + (int)$value->get("gap")/10;
                     $z = (int)$value->get("z");
                     $name = (string)$value->get("name");
+                    // $this->getServer()->getLogger()->notice("Found the text $name with the text " . implode("#", $value->get("lines")) . " at $x, $y, $z, in the level $level");
                     foreach ((array) $value->get("lines") as $line){
                         $y = $y - (int)$value->get("gap")/10;
-                        $this->createText($name, (string)$line, $event->getPlayer(), $x, $y, $z);
+                        $this->createText($name, (string)$line, $event->getPlayer(), $x, $y, $z, $level);
+
                     }
                 }
             }
