@@ -155,7 +155,7 @@ class Main extends PluginBase implements Listener{
                     break;
             }
         });
-        $form->setTitle("Remove a FloatingText");
+        $form->setTitle("Edit a FloatingText");
         $form->setContent("Below are all the floating texts that are in your current level, click one to edit it.");
         $fts = array();
         foreach ($player->getLevel()->getEntities() as $entity){
