@@ -28,6 +28,7 @@ class FloatingTextCommand extends Command {
                 if (isset($args[0])) {
                     switch ($args[0]) {
                         case "add":
+                        case "a":
                         case "spawn":
                         case "summon":
                         case "new":
@@ -41,6 +42,7 @@ class FloatingTextCommand extends Command {
                         break;
                         case "break":
                         case "delete":
+                        case "r":
                         case "bye":
                         case "remove":
                             if ($sender->hasPermission("wft.remove")) {
@@ -50,6 +52,7 @@ class FloatingTextCommand extends Command {
                             }
                         break;
                         case "edit":
+                        case "e":
                             if ($sender->hasPermission("wft.edit")) {
                                 $this->plugin->openEditList($sender);
                             } else {
@@ -57,6 +60,7 @@ class FloatingTextCommand extends Command {
                             }
                         break;
                         case "reload":
+                        case "r":
                             if ($sender->hasPermission("wft.reload")) {
                                 $this->plugin->reloadTexts($sender);
                             } else {
@@ -87,6 +91,7 @@ class FloatingTextCommand extends Command {
                         case "name":
                         case "id":
                         case "whois":
+                        case "n":
                             if ($sender->hasPermission("wft.name")) {
                                 $this->plugin->idlist[$sender->getName()] = true;
                                 $sender->sendMessage(TextFormat::GREEN . "Tap on/slightly below a text to get its name");
@@ -95,11 +100,11 @@ class FloatingTextCommand extends Command {
                             }
                         break;
                         default:
-                            $sender->sendMessage(TextFormat::GRAY . "Usage: ft {add/remove/edit/tp/tphere}");
+                            $sender->sendMessage(TextFormat::GRAY . "Usage: ft {(a)dd/(r)emove/(e)dit/tp/tphere/(n)ame/(r)eload}");
                             break;
                     }
                 } else {
-                    $sender->sendMessage("Usage: ft {add/remove/edit/tp/tphere}");
+                    $sender->sendMessage("Usage: ft {(a)dd/(r)emove/(e)dit/tp/tphere/(n)ame/(r)eload}");
                 }
             } else {
                 $sender->sendMessage(TextFormat::RED . "> You do not have permission to use this command!");
