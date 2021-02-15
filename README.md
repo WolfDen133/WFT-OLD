@@ -1,9 +1,9 @@
-# WFT 1.3.1-BETA
+# WFT 1.3.2-BETA
 
 Whats new? 
 
 Added: 
-  Refresh timer, tags(as seen below), config saving/editing, /ft reload command, /ft name command (gets the name of the ft when clicked).
+  Refresh timer, tags(as seen below), config saving/editing, /ft reload command, /ft name command (gets the name of the ft when clicked), added the ability to do all the       functions from commands, added the help subcommand.
   Bug fixes, still more tho.
   
   ### Tags
@@ -44,8 +44,10 @@ tp|ft.tp
 tphere|ft.tphere
 reload|ft.reload
 name|ft.name
+help|ft.help
 
 ## Bugs
 Known bugs are currently that:
   
   Will sometimes move text slightly when reloading (fixed)
+  Will sometiems dupe the texts (fixed)
