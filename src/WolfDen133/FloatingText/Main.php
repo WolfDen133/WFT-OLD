@@ -436,8 +436,6 @@ class Main extends PluginBase implements Listener{
                 $name = $this->nameReplace($name, $entity);
                 $entity->setNameTag($name);
             }
-        } else {
-            $this->getServer()->getLogger()->error("The entity class for reloadTexts was not type FloatingText");
         }
     }
 
