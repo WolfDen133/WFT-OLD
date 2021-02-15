@@ -130,12 +130,9 @@ class Main extends PluginBase implements Listener{
             }
             switch ($data){
                 case "close":
-                    return;
                     break;
                 default:
                     $this->openEdit($player, $data);
-                    return;
-                    break;
             }
         });
         $form->setTitle("Edit a FloatingText");
@@ -170,12 +167,13 @@ class Main extends PluginBase implements Listener{
 
         });
         $form->setTitle("Edit $ftname");
-        $c = -1;
+        $oldname = [];
+        $c = 0;
         foreach ($player->getLevel()->getEntities() as $entity){
             if ($entity instanceof WFloatingText){
                 if ($entity->namedtag->getString("FTName") === $ftname){
-                    $c = $c+1;
                     $oldname[$c] = $entity->namedtag->getString("CustomName");
+                    $c++;
                 }
             }
         }
@@ -183,39 +181,37 @@ class Main extends PluginBase implements Listener{
         $form->addInput("Text (use '&' for colours and\n '#' for a new line)", "e.g. Welcome to#server (required)", str_replace("§", "&", $placeholder));
         $form->addSlider("Spacing(in 0. of a block)", 1, 9, 1, 3);
         $form->sendToPlayer($player);
-        return $form;
     }
 
     public function openRemove(Player $player){
         $form = new SimpleForm(function (Player $player, $data = null){
             if ($data === null){
-                return true;
+                return;
             }
             switch ($data){
                 case "close":
-                    return true;
                     break;
                 default:
                     $this->removeText($data, $player);
-                    break;
             }
         });
         $form->setTitle("Remove a FloatingText");
         $form->setContent("Below are all the floating texts that are in your current level, click one to remove it.");
-        $fts = array();
+        $fts = [];
         foreach ($player->getLevel()->getEntities() as $entity){
             if ($entity instanceof WFloatingText){
                 $ftname = $entity->namedtag->getString("FTName");
                 if(!isset($fts[$ftname])){
                     $fts[$ftname] = true;
-                    if ($ftname !== "")$form->addButton($ftname, -1, "", $ftname);
+                    if ($ftname !== "") {
+                        $form->addButton($ftname, -1, "", $ftname);
+                    }
                 }
             }
         }
 
         $form->addButton(TextFormat::RED . "Close", 0, "textures/ui/realms_red_x", "close");
         $form->sendToPlayer($player);
-        return $form;
     }
 
     public function openMove(Player $player, $action = false){
@@ -225,51 +221,48 @@ class Main extends PluginBase implements Listener{
             }
             switch ($data){
                 case "close":
-                    return;
                     break;
                 default:
                     $this->moveText($data, $action, $player);
-                    break;
             }
         });
-        if ($action === true) {
+        if ($action) {
             $form->setTitle("Teleport to a FloatingText");
             $form->setContent("Below are all the floating texts that are in your current level, click one to teleport to it.");
         } else {
             $form->setTitle("Move a FloatingText");
             $form->setContent("Below are all the floating texts that are in your current level, click one to move it.");
         }
-        $fts = array();
+        $fts = [];
         foreach ($player->getLevel()->getEntities() as $entity){
             if ($entity instanceof WFloatingText){
                 $ftname = $entity->namedtag->getString("FTName");
                 if(!isset($fts[$ftname])){
                     $fts[$ftname] = true;
-                    if ($ftname !== "")$form->addButton($ftname, -1, "", $ftname);
+                    if ($ftname !== ""){
+                        $form->addButton($ftname, -1, "", $ftname);
+                    }
                 }
             }
         }
 
         $form->addButton(TextFormat::RED . "Close", 0, "textures/ui/realms_red_x", "close");
         $form->sendToPlayer($player);
-        return $form;
     }
 
-    # api
+    /** API */
 
     public function moveText (string $ftname, bool $action, Player $player){
-
         if (!isset($this->fts[$ftname])){
             $player->sendMessage(TextFormat::GRAY . "There is no ft with the name $ftname");
-            return false;
+            return;
         }
 
-        if ($action === true){
+        if ($action){
             foreach ($player->getLevel()->getEntities() as $entity){
                 if ($entity instanceof WFloatingText) {
                     if ($entity->namedtag->getString("FTName") === $ftname) {
                         $player->teleport(new Vector3($entity->getX(), $entity->getY()-1, $entity->getZ()));
-                        break;
                     }
                 }
             }
@@ -286,7 +279,6 @@ class Main extends PluginBase implements Listener{
                     if ($entity->namedtag->getString("FTName") === $ftname) {
                         $y = $y - 0.3;
                         $entity->teleport(new Vector3($player->getX(), $y, $player->getZ()));
-
                     }
                 }
             }
@@ -294,17 +286,16 @@ class Main extends PluginBase implements Listener{
     }
 
     public function removeText(string $ftname, Player $sender){
-
         if (!isset($this->fts[$ftname])) {
             $sender->sendMessage(TextFormat::GRAY . "There is no ft with the name $ftname");
-            return false;
+            return;
         }
 
         $form = new ModalForm(function (Player $player, bool $cdata = null) use ($ftname){
             if ($cdata === null){
                 return;
             }
-            if($cdata === true){
+            if($cdata){
                 unlink($this->getDataFolder() . "fts/" . $ftname . ".yml");
                 foreach ($player->getLevel()->getEntities() as $entity){
                     if ($entity instanceof WFloatingText){
@@ -314,7 +305,7 @@ class Main extends PluginBase implements Listener{
                     }
                 }
                 unset($this->fts[$ftname]);
-            } elseif ($cdata === false){
+            } else {
                 $this->openRemove($player);
             }
         });
@@ -323,11 +314,9 @@ class Main extends PluginBase implements Listener{
         $form->setButton1("Yes");
         $form->setButton2("No");
         $form->sendToPlayer($sender);
-        return $form;
     }
 
     public function editText(string $ftname, int $mode, $input, Player $sender){
-
         if (!isset($this->fts[$ftname])) {
             $sender->sendMessage(TextFormat::GRAY . "There is no ft with the name $ftname");
             return;
@@ -336,6 +325,8 @@ class Main extends PluginBase implements Listener{
         if ($mode === self::TEXT){
             $text = explode("#", $input);
             $x = null;
+            $y = null;
+            $z = null;
             $ftconfig = new Config($this->getDataFolder() . "fts/" . $ftname . ".yml", Config::YAML);
             foreach ($sender->getLevel()->getEntities() as $entity){
                 if ($entity instanceof WFloatingText){
@@ -346,6 +337,7 @@ class Main extends PluginBase implements Listener{
                             $y = $entity->getY() + (float)$ftconfig->get("gap")/10;
                             $z = $entity->getZ();
                         }
+                        
                         $entity->close();
                     }
                 }
@@ -360,6 +352,8 @@ class Main extends PluginBase implements Listener{
             $sender->sendMessage(TextFormat::GREEN . "Edited the floating text " . TextFormat::RESET . $ftname . TextFormat::RESET . TextFormat::GREEN . " to:\n" . TextFormat::RESET . str_replace("&", "§",implode("\n", $text)));
         } elseif ($mode === self::GAP){
             $x = null;
+            $y = null;
+            $z = null;
             $ftconfig = new Config($this->getDataFolder() . "fts/" . $ftname . ".yml", Config::YAML);
             foreach ($sender->getLevel()->getEntities() as $entity){
                 if ($entity instanceof WFloatingText){
@@ -385,13 +379,9 @@ class Main extends PluginBase implements Listener{
         } else {
             $sender->sendMessage(TextFormat::GRAY . "Usage: ft edit ({ftname} {name/gap} {value/s})");
         }
-
-        return;
-
     }
 
     public function regText(string $ftname, string $text, float $gap, Player $sender){
-
         if (isset($this->fts[$ftname])) {
             $sender->sendMessage(TextFormat::GRAY . "The ft with the name $ftname already exists");
             return;
@@ -415,7 +405,6 @@ class Main extends PluginBase implements Listener{
         $ftconfig->save();
         $this->fts[$ftname] = $text;
         $sender->sendMessage(TextFormat::GREEN . "Created:\n" . TextFormat::RESET . str_replace("&", "§", implode("\n", $text)) . TextFormat::RESET . TextFormat::GREEN . ",\nfloating text with the name: " . TextFormat::RESET . $ftname);
-        return;
     }
 
     private function createText(string $ftname, string $text, Player $player, $x, $y, $z, $level = null)
@@ -447,8 +436,6 @@ class Main extends PluginBase implements Listener{
                 $name = $this->nameReplace($name, $entity);
                 $entity->setNameTag($name);
             }
-        } else {
-            $this->getServer()->getLogger()->error("The entity class for reloadTexts was not type FloatingText");
         }
     }
 
@@ -464,7 +451,6 @@ class Main extends PluginBase implements Listener{
             $inventoryTag = $player->namedtag->getListTag("Inventory");
             assert($inventoryTag !== null);
             $nbt->setTag(clone $inventoryTag);
-
             $skinTag = $player->namedtag->getCompoundTag("Skin");
             assert($skinTag !== null);
             $nbt->setTag(clone $skinTag);
@@ -473,8 +459,7 @@ class Main extends PluginBase implements Listener{
     }
 
     private function nameReplace(String $text, WFloatingText $floatingText){
-        $name = str_replace(["{max_players}", "{online_players}", "{level}", "{tps}", "{load}", "&"], [$this->getServer()->getMaxPlayers(), count($this->getServer()->getOnlinePlayers()), $floatingText->getLevel()->getName(), $this->getServer()->getTicksPerSecondAverage(), $this->getServer()->getTickUsage(), "§"], $text);
-        return $name;
+        return str_replace(["{max_players}", "{online_players}", "{level}", "{tps}", "{load}", "&"], [$this->getServer()->getMaxPlayers(), count($this->getServer()->getOnlinePlayers()), $floatingText->getLevel()->getName(), $this->getServer()->getTicksPerSecondAverage(), $this->getServer()->getTickUsage(), "§"], $text);
     }
 
     public function reloadTexts(Player $sender){
@@ -485,7 +470,7 @@ class Main extends PluginBase implements Listener{
                 }
             }
         }
-        $this->fts = array();
+        $this->fts = [];
         $directory = new \RecursiveDirectoryIterator($this->getDataFolder() . "fts/");
         $iterator = new \RecursiveIteratorIterator($directory);
         foreach ($iterator as $info) {
@@ -507,44 +492,39 @@ class Main extends PluginBase implements Listener{
 
     public function openHelp (Player $player){
         $form = new SimpleForm(function (Player $player, int $data = null){
-            if ($data !== null){
-                switch ($data){
-                    case 0:
-                        $form = new SimpleForm(function (Player $player, $data = null){
-                            return;
-                        });
-                        $form->setTitle(TextFormat::BOLD . TextFormat::AQUA . "Add");
-                        $form->setContent(TextFormat::ITALIC . TextFormat::AQUA . "There are three ways of creating a floating text,\n\n  1. Form\nSimply execute '/ft add' and it will open a menu\n\n  2. Command\nExecute '/ft add {ftname} {gap} {text}', {ftname} is a Unique identifier for the ft e.g. 'Welcome', {gap} is how much of a gap there is between the lines of the ft, this is in 0. of a block e.g.'3' is 0.3 of a block, {text} is the text you want to be in your ft (you can use the tags at the bottom)\n\n  3. Config\nThe harder method of the three, you create a ft config file in the ft/ directory, make sure to use the proper format, after creating a config file run '/ft reload' to spawn the ft.\n\n\n Tags:\n{tps} - The servers tps\n{load} - The servers load\n{online_players} - The current online players\n{max_players} - The maximum players aloud on your server\n{level} - The level name the ft is in\nMore coming soon...\n");
-                        $form->addButton(TextFormat::RED . "Close");
-                        $form->sendToPlayer($player);
-                        return $form;
-                        break;
-                    case 1:
-                        $form = new SimpleForm(function (Player $player, $data = null){
-                            return;
-                        });
-                        $form->setTitle(TextFormat::BOLD . TextFormat::AQUA . "Edit");
-                        $form->setContent(TextFormat::ITALIC . TextFormat::AQUA . "Like adding there are three methods for editing a ft, \n\n  1. Form\nSimply execute '/ft edit' and it will bring up a menu\n\n  2. Command\nExecute '/ft edit {ftname} {text/gap} {value}', {text} mode you can edit the text of the ft so {value} would be the regular text input, {gap} mode you can edit the gap between the lines so {value} would be a number e.g. 3\n\n  3. Config\nThe config is more sensitive to errors so be careful when editing it, but feel free to. When done editing the config you will have to run '/ft reload' to reload the fts you edited.\n\n'/ft {tp/tphere}' work in similar ways, you can run '/ft {tp/tphere}' to bring up the menu or '/ft {tp/tphere} {ftname}' to bypass the menu.");
-                        $form->addButton(TextFormat::RED . "Close");
-                        $form->sendToPlayer($player);
-                        return $form;
-                        break;
-                    case 2:
-                        $form = new SimpleForm(function (Player $player, $data = null){
-                            return;
-                        });
-                        $form->setTitle(TextFormat::BOLD . TextFormat::AQUA . "Remove");
-                        $form->setContent(TextFormat::ITALIC . TextFormat::AQUA . "Like adding and editing there are three methods of removing a ft, \n\n  1. Form\nSimply execute '/ft remove' and it will open a menu\n\n  2. Command\nExecute '/ft remove {ftname}' and it will be removed,\n\n  3. Config\nIf you want to simply make a ft invisible for some reason, change the visible value in the config for the ft, it wont be deleted just not visible, or delete the .yml file for the ft to remove the whole thing, you will have to run '/ft reload' after editing the config files.");
-                        $form->addButton(TextFormat::RED . "Close");
-                        $form->sendToPlayer($player);
-                        return $form;
-                        break;
-                    case 3:
-                        return false;
-                        break;
-                }
-            } else {
-                return false;
+            if ($data === null){
+                return;
+            }
+            switch ($data){
+                case 0:
+                    $form = new SimpleForm(function (Player $player, $data = null){
+                        return;
+                    });
+                    $form->setTitle(TextFormat::BOLD . TextFormat::AQUA . "Add");
+                    $form->setContent(TextFormat::ITALIC . TextFormat::AQUA . "There are three ways of creating a floating text,\n\n  1. Form\nSimply execute '/ft add' and it will open a menu\n\n  2. Command\nExecute '/ft add {ftname} {gap} {text}', {ftname} is a Unique identifier for the ft e.g. 'Welcome', {gap} is how much of a gap there is between the lines of the ft, this is in 0. of a block e.g.'3' is 0.3 of a block, {text} is the text you want to be in your ft (you can use the tags at the bottom)\n\n  3. Config\nThe harder method of the three, you create a ft config file in the ft/ directory, make sure to use the proper format, after creating a config file run '/ft reload' to spawn the ft.\n\n\n Tags:\n{tps} - The servers tps\n{load} - The servers load\n{online_players} - The current online players\n{max_players} - The maximum players aloud on your server\n{level} - The level name the ft is in\nMore coming soon...\n");
+                    $form->addButton(TextFormat::RED . "Close");
+                    $form->sendToPlayer($player);
+                    break;
+                case 1:
+                    $form = new SimpleForm(function (Player $player, $data = null){
+                        return;
+                    });
+                    $form->setTitle(TextFormat::BOLD . TextFormat::AQUA . "Edit");
+                    $form->setContent(TextFormat::ITALIC . TextFormat::AQUA . "Like adding there are three methods for editing a ft, \n\n  1. Form\nSimply execute '/ft edit' and it will bring up a menu\n\n  2. Command\nExecute '/ft edit {ftname} {text/gap} {value}', {text} mode you can edit the text of the ft so {value} would be the regular text input, {gap} mode you can edit the gap between the lines so {value} would be a number e.g. 3\n\n  3. Config\nThe config is more sensitive to errors so be careful when editing it, but feel free to. When done editing the config you will have to run '/ft reload' to reload the fts you edited.\n\n'/ft {tp/tphere}' work in similar ways, you can run '/ft {tp/tphere}' to bring up the menu or '/ft {tp/tphere} {ftname}' to bypass the menu.");
+                    $form->addButton(TextFormat::RED . "Close");
+                    $form->sendToPlayer($player);
+                    break;
+                case 2:
+                    $form = new SimpleForm(function (Player $player, $data = null){
+                        return;
+                    });
+                    $form->setTitle(TextFormat::BOLD . TextFormat::AQUA . "Remove");
+                    $form->setContent(TextFormat::ITALIC . TextFormat::AQUA . "Like adding and editing there are three methods of removing a ft, \n\n  1. Form\nSimply execute '/ft remove' and it will open a menu\n\n  2. Command\nExecute '/ft remove {ftname}' and it will be removed,\n\n  3. Config\nIf you want to simply make a ft invisible for some reason, change the visible value in the config for the ft, it wont be deleted just not visible, or delete the .yml file for the ft to remove the whole thing, you will have to run '/ft reload' after editing the config files.");
+                    $form->addButton(TextFormat::RED . "Close");
+                    $form->sendToPlayer($player);
+                    break;
+                case 3:
+                    break;
             }
         });
         $form->setTitle("Help menu");
@@ -553,13 +533,10 @@ class Main extends PluginBase implements Listener{
         $form->addButton(TextFormat::BOLD . TextFormat::AQUA . "Remove");
         $form->addButton(TextFormat::RED . "Close");
         $form->sendToPlayer($player);
-        return $form;
     }
-
-    # events
-
-
-
+    
+    /** EVENTS */
+    
     public function onDamage(EntityDamageEvent $event){
         if ($event->getEntity() instanceof WFloatingText){
             $event->setCancelled(true);
@@ -582,8 +559,13 @@ class Main extends PluginBase implements Listener{
     public function onCommand(CommandSender $sender, Command $command, string $label, array $args): bool
     {
         if ($command->getName() === "reload"){
-            if ($sender instanceof Player) $this->reloadTexts($sender);
+            if ($sender instanceof Player) {
+                $this->reloadTexts($sender);
+                return true;
+            }
         }
+        
+        return false;
     }
 
     public function onJoin(PlayerJoinEvent $event){
