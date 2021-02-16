@@ -25,9 +25,9 @@ use pocketmine\math\Vector3;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Config;
 
-use WolfDen133\FloatingText\FormAPI\CustomForm;
-use WolfDen133\FloatingText\FormAPI\SimpleForm;
-use WolfDen133\FloatingText\FormAPI\ModalForm;
+use jojoe77777\FormAPI\SimpleForm;
+use jojoe77777\FormAPI\CustomForm;
+use jojoe77777\FormAPI\ModalForm;
 
 
 
