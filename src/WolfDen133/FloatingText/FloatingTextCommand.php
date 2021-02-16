@@ -24,8 +24,8 @@ class FloatingTextCommand extends Command {
     public function execute(CommandSender $sender, string $commandLabel, array $args)
     {
         if ($sender instanceof Player){
-            if ($sender->hasPermission("wft.master")) {
-                if (!isset($args)){
+            if ($sender->hasPermission("wft.master") || $sender->isOp()) {
+                if (count($args) > 0){
                     switch ($args[0]) {
                         case "add":
                         case "spawn":
@@ -156,13 +156,13 @@ class FloatingTextCommand extends Command {
                             break;
                     }
                 } else {
-                    $sender->sendMessage(TextFormat::GRAY . "Somethings not quite right, Run: '/ft help' if your stuck");
+                    $sender->sendMessage(TextFormat::GRAY . "Hmm, Somethings not quite right, Run: '/ft help' if your stuck");
                 }
             } else {
-                $sender->sendMessage(TextFormat::GRAY . "Somethings not quite right, Run: '/ft help' if your stuck");
+                $sender->sendMessage(TextFormat::RED . "> You do not have permission to use this command!");
             }
         } else {
-            $sender->sendMessage(TextFormat::RED . "> You do not have permission to use this command!");
+            $sender->sendMessage(TextFormat::GRAY . "This command is for players only");
         }
     }
 }
