@@ -25,134 +25,138 @@ class FloatingTextCommand extends Command {
     {
         if ($sender instanceof Player){
             if ($sender->hasPermission("wft.master")) {
-                switch ($args[0]) {
-                    case "add":
-                    case "spawn":
-                    case "summon":
-                    case "new":
-                    case "make":
-                    case "create":
-                    case "c":
-                    case "a":
-                        if ($sender->hasPermission("wft.add")) {
-                            if (count($args) === 1) {
-                                $this->plugin->openCreation($sender);
-                            } elseif (count($args) > 3) {
-                                $ftname = $args[1];
-                                $gap = $args[2];
-                                $gap = $gap / 10;
-                                $text = array_slice($args, 3);
-                                $this->plugin->regText($ftname, implode(" ", $text), $gap, $sender);
-                            } else {
-                                $sender->sendMessage(TextFormat::GRAY . "Somethings not quite right, Run: '/ft help' if your stuck");
-                            }
-                        } else {
-                            $sender->sendMessage(TextFormat::RED . "> You do not have permission to use this command!");
-                        }
-                        break;
-                    case "break":
-                    case "delete":
-                    case "bye":
-                    case "remove":
-                    case "d":
-                    case "r":
-                        if ($sender->hasPermission("wft.remove")) {
-                            if (count($args) === 1){
-                                $this->plugin->openRemove($sender);
-                            } elseif (count($args) === 2) {
-                                $this->plugin->removeText($args[1], $sender);
-                            } else {
-                                $sender->sendMessage(TextFormat::GRAY . "Somethings not quite right, Run: '/ft help' if your stuck");
-                            }
-
-                        } else {
-                            $sender->sendMessage(TextFormat::RED . "> You do not have permission to use this command!");
-                        }
-                        break;
-                    case "edit":
-                    case "e":
-                        if ($sender->hasPermission("wft.edit")) {
-                            if (count($args) === 1){
-                                $this->plugin->openEditList($sender);
-                            } elseif (count($args) > 3) {
-                                if ($args[2] === "gap"){
-                                    $gap = (float)$args[3];
-                                    $this->plugin->editText($args[1], Main::GAP, $gap, $sender);
-                                } elseif ($args[2] === "text"){
-                                    $this->plugin->editText($args[1], Main::TEXT, implode(" ", array_slice($args, 3)), $sender);
+                if (!isset($args)){
+                    switch ($args[0]) {
+                        case "add":
+                        case "spawn":
+                        case "summon":
+                        case "new":
+                        case "make":
+                        case "create":
+                        case "c":
+                        case "a":
+                            if ($sender->hasPermission("wft.add")) {
+                                if (count($args) === 1) {
+                                    $this->plugin->openCreation($sender);
+                                } elseif (count($args) > 3) {
+                                    $ftname = $args[1];
+                                    $gap = $args[2];
+                                    $gap = $gap / 10;
+                                    $text = array_slice($args, 3);
+                                    $this->plugin->regText($ftname, implode(" ", $text), $gap, $sender);
+                                } else {
+                                    $sender->sendMessage(TextFormat::GRAY . "Somethings not quite right, Run: '/ft help' if your stuck");
                                 }
                             } else {
-                                $sender->sendMessage(TextFormat::GRAY . "Somethings not quite right, Run: '/ft help' if your stuck");
+                                $sender->sendMessage(TextFormat::RED . "> You do not have permission to use this command!");
                             }
+                            break;
+                        case "break":
+                        case "delete":
+                        case "bye":
+                        case "remove":
+                        case "d":
+                        case "r":
+                            if ($sender->hasPermission("wft.remove")) {
+                                if (count($args) === 1){
+                                    $this->plugin->openRemove($sender);
+                                } elseif (count($args) === 2) {
+                                    $this->plugin->removeText($args[1], $sender);
+                                } else {
+                                    $sender->sendMessage(TextFormat::GRAY . "Somethings not quite right, Run: '/ft help' if your stuck");
+                                }
 
-                        } else {
-                            $sender->sendMessage(TextFormat::RED . "> You do not have permission to use this command!");
-                        }
-                        break;
-                    case "reload":
-                        if ($sender->hasPermission("wft.reload")) {
-                            $this->plugin->reloadTexts($sender);
-                        } else {
-                            $sender->sendMessage(TextFormat::RED . "> You do not have permission to use this command!");
-                        }
-                        break;
-                    case "teleporthere":
-                    case "tphere":
-                    case "movehere":
-                    case "bringhere":
-                    case "tph":
-                        if ($sender->hasPermission("wft.movehere")) {
-                            if (count($args) === 1){
-                                $this->plugin->openMove($sender);
-                            } elseif (count($args) === 2){
-                                $this->plugin->moveText($args[1], false, $sender);
                             } else {
-                                $sender->sendMessage(TextFormat::GRAY . "Somethings not quite right, Run: '/ft help' if your stuck");
+                                $sender->sendMessage(TextFormat::RED . "> You do not have permission to use this command!");
                             }
-                        } else {
-                            $sender->sendMessage(TextFormat::RED . "> You do not have permission to use this command!");
-                        }
-                        break;
-                    case "teleportto":
-                    case "tpto":
-                    case "goto":
-                    case "teleport":
-                    case "tp":
-                        if ($sender->hasPermission("wft.moveto")) {
-                            if (count($args) === 1) {
-                                $this->plugin->openMove($sender, true);
-                            } elseif (count($args) === 2) {
-                                $this->plugin->moveText($args[1], true, $sender);
+                            break;
+                        case "edit":
+                        case "e":
+                            if ($sender->hasPermission("wft.edit")) {
+                                if (count($args) === 1){
+                                    $this->plugin->openEditList($sender);
+                                } elseif (count($args) > 3) {
+                                    if ($args[2] === "gap"){
+                                        $gap = (float)$args[3];
+                                        $this->plugin->editText($args[1], Main::GAP, $gap, $sender);
+                                    } elseif ($args[2] === "text"){
+                                        $this->plugin->editText($args[1], Main::TEXT, implode(" ", array_slice($args, 3)), $sender);
+                                    }
+                                } else {
+                                    $sender->sendMessage(TextFormat::GRAY . "Somethings not quite right, Run: '/ft help' if your stuck");
+                                }
+
                             } else {
-                                $sender->sendMessage(TextFormat::GRAY . "Somethings not quite right, Run: '/ft help' if your stuck");
+                                $sender->sendMessage(TextFormat::RED . "> You do not have permission to use this command!");
                             }
-                        } else {
-                            $sender->sendMessage(TextFormat::RED . "> You do not have permission to use this command!");
-                        }
-                        break;
-                    case "name":
-                    case "id":
-                    case "whois":
-                    case "n":
-                        if ($sender->hasPermission("wft.name")) {
-                            $this->plugin->idlist[$sender->getName()] = true;
-                            $sender->sendMessage(TextFormat::GREEN . "Tap on/slightly below a text to get its name");
-                        } else {
-                            $sender->sendMessage(TextFormat::RED . "> You do not have permission to use this command!");
-                        }
-                        break;
-                    case "help":
-                    case "stuck":
-                    case "h":
-                        if ($sender->hasPermission("wft.help")) {
-                            $this->plugin->openHelp($sender);
-                        } else {
-                            $sender->sendMessage(TextFormat::RED . "> You do not have permission to use this command!");
-                        }
-                        break;
-                    default:
-                        $sender->sendMessage(TextFormat::GRAY . "Somethings not quite right, Run: '/ft help' if your stuck");
-                        break;
+                            break;
+                        case "reload":
+                            if ($sender->hasPermission("wft.reload")) {
+                                $this->plugin->reloadTexts($sender);
+                            } else {
+                                $sender->sendMessage(TextFormat::RED . "> You do not have permission to use this command!");
+                            }
+                            break;
+                        case "teleporthere":
+                        case "tphere":
+                        case "movehere":
+                        case "bringhere":
+                        case "tph":
+                            if ($sender->hasPermission("wft.movehere")) {
+                                if (count($args) === 1){
+                                    $this->plugin->openMove($sender);
+                                } elseif (count($args) === 2){
+                                    $this->plugin->moveText($args[1], false, $sender);
+                                } else {
+                                    $sender->sendMessage(TextFormat::GRAY . "Somethings not quite right, Run: '/ft help' if your stuck");
+                                }
+                            } else {
+                                $sender->sendMessage(TextFormat::RED . "> You do not have permission to use this command!");
+                            }
+                            break;
+                        case "teleportto":
+                        case "tpto":
+                        case "goto":
+                        case "teleport":
+                        case "tp":
+                            if ($sender->hasPermission("wft.moveto")) {
+                                if (count($args) === 1) {
+                                    $this->plugin->openMove($sender, true);
+                                } elseif (count($args) === 2) {
+                                    $this->plugin->moveText($args[1], true, $sender);
+                                } else {
+                                    $sender->sendMessage(TextFormat::GRAY . "Somethings not quite right, Run: '/ft help' if your stuck");
+                                }
+                            } else {
+                                $sender->sendMessage(TextFormat::RED . "> You do not have permission to use this command!");
+                            }
+                            break;
+                        case "name":
+                        case "id":
+                        case "whois":
+                        case "n":
+                            if ($sender->hasPermission("wft.name")) {
+                                $this->plugin->idlist[$sender->getName()] = true;
+                                $sender->sendMessage(TextFormat::GREEN . "Tap on/slightly below a text to get its name");
+                            } else {
+                                $sender->sendMessage(TextFormat::RED . "> You do not have permission to use this command!");
+                            }
+                            break;
+                        case "help":
+                        case "stuck":
+                        case "h":
+                            if ($sender->hasPermission("wft.help")) {
+                                $this->plugin->openHelp($sender);
+                            } else {
+                                $sender->sendMessage(TextFormat::RED . "> You do not have permission to use this command!");
+                            }
+                            break;
+                        default:
+                            $sender->sendMessage(TextFormat::GRAY . "Somethings not quite right, Run: '/ft help' if your stuck");
+                            break;
+                    }
+                } else {
+                    $sender->sendMessage(TextFormat::GRAY . "Somethings not quite right, Run: '/ft help' if your stuck");
                 }
             } else {
                 $sender->sendMessage(TextFormat::GRAY . "Somethings not quite right, Run: '/ft help' if your stuck");
