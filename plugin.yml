@@ -1,6 +1,34 @@
----
 name: WFT
 version: 1.3.2
 main: WolfDen133\FloatingText\Main
 api: 3.0.0
-...
+authour: WolfDen133
+depend:
+  - FormAPI
+
+permissions:
+  wft.master:
+    description: Floating text master permission
+    default: op
+    children:
+      wft.add:
+        description: /ft add
+        default: op
+      wft.remove:
+        description: /ft remove
+        default: op
+      wft.edit:
+        description: /ft edit
+        default: op
+      wft.movehere:
+        description: /ft movehere
+        default: op
+      wft.moveto:
+        description: /ft move
+        default: op
+      wft.name:
+        description: /ft name
+        default: op
+      wft.help:
+        description: /ft help
+        default: op
