@@ -33,18 +33,18 @@ feel free to message me on discord as well [WolfDen133#4974](https://dsc.bio/Wol
 
 ## Commands
 
-Master command is ft|ft.master
+Master command is ft|wft.master
 
 Subcommand | Permission
 ---------|----------
-add|ft.add
-remove|ft.remove
-edit|ft.edit
-tp|ft.tp
-tphere|ft.tphere
-reload|ft.reload
-name|ft.name
-help|ft.help
+add|wft.add
+remove|wft.remove
+edit|wft.edit
+tp|wft.tp
+tphere|wft.tphere
+reload|wft.reload
+name|wft.name
+help|wft.help
 
 ## Bugs
 Known bugs are currently that:
