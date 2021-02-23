@@ -14,6 +14,7 @@ use pocketmine\event\entity\EntityMotionEvent;
 use pocketmine\event\Listener;
 
 use pocketmine\event\player\PlayerJoinEvent;
+
 use pocketmine\nbt\tag\CompoundTag;
 
 use pocketmine\Player;
@@ -501,7 +502,7 @@ class Main extends PluginBase implements Listener{
                         return;
                     });
                     $form->setTitle(TextFormat::BOLD . TextFormat::AQUA . "Add");
-                    $form->setContent(TextFormat::ITALIC . TextFormat::AQUA . "There are three ways of creating a floating text,\n\n  1. Form\nSimply execute '/ft add' and it will open a menu\n\n  2. Command\nExecute '/ft add {ftname} {gap} {text}', {ftname} is a Unique identifier for the ft e.g. 'Welcome', {gap} is how much of a gap there is between the lines of the ft, this is in 0. of a block e.g.'3' is 0.3 of a block, {text} is the text you want to be in your ft (you can use the tags at the bottom)\n\n  3. Config\nThe harder method of the three, you create a ft config file in the ft/ directory, make sure to use the proper format, after creating a config file run '/ft reload' to spawn the ft.\n\n\n Tags:\n{tps} - The servers tps\n{load} - The servers load\n{online_players} - The current online players\n{max_players} - The maximum players aloud on your server\n{level} - The level name the ft is in\nMore coming soon...\n");
+                    $form->setContent(TextFormat::ITALIC . TextFormat::AQUA . "There are three ways of creating a floating text,\n\n  1. Form\nSimply execute '/ft add' and it will open a menu\n\n  2. Command\nExecute '/ft add {ftname} ({gap}) {text}', {ftname} is a Unique identifier for the ft e.g. 'Welcome', {gap} is how much of a gap there is between the lines of the ft alternately you can leave this out and it will default to 3, this is in 0. of a block e.g.'3' is 0.3 of a block, {text} is the text you want to be in your ft (you can use the tags at the bottom)\n\n  3. Config\nThe harder method of the three, you create a ft config file in the ft/ directory, make sure to use the proper format, after creating a config file run '/ft reload' to spawn the ft.\n\n\n Tags:\n{tps} - The servers tps\n{load} - The servers load\n{online_players} - The current online players\n{max_players} - The maximum players aloud on your server\n{level} - The level name the ft is in\nMore coming soon...\n");
                     $form->addButton(TextFormat::RED . "Close");
                     $form->sendToPlayer($player);
                     break;
