@@ -4,7 +4,7 @@
 Whats new? 
 
 Added: 
-  Refresh timer, tags(as seen below), config saving/editing, /ft reload command, /ft name command (gets the name of the ft when clicked), added the ability to do all the       functions from commands, added the help subcommand.
+  Refresh timer, tags(as seen below), config saving/editing, /ft reload command, /ft name command (gets the name of the ft when clicked), added the ability to do all the       functions from commands, added the help subcommand, added leave {gap} blank to default to 3.
   Bug fixes, still more tho.
   
   ### Tags
