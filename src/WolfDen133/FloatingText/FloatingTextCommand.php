@@ -40,9 +40,14 @@ class FloatingTextCommand extends Command {
                                     $this->plugin->openCreation($sender);
                                 } elseif (count($args) > 3) {
                                     $ftname = $args[1];
-                                    $gap = $args[2];
-                                    $gap = $gap / 10;
-                                    $text = array_slice($args, 3);
+                                    if (is_numeric($args[2])) {
+                                        $gap = $args[2];
+                                        $gap = $gap / 10;
+                                        $text = array_slice($args, 3);
+                                    } else {
+                                        $gap = 0.3;
+                                        $text = array_slice($args, 2);
+                                    }
                                     $this->plugin->regText($ftname, implode(" ", $text), $gap, $sender);
                                 } else {
                                     $sender->sendMessage(TextFormat::GRAY . "Somethings not quite right, Run: '/ft help' if your stuck");
