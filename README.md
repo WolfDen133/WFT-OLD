@@ -56,4 +56,7 @@ Known bugs are currently that:
 
 ## SneakPeeks
 
-![LeaderBoard](https://youtu.be/5FTQqZNwDOY)
+LeaderBoards -
+https://user-images.githubusercontent.com/61922721/109555945-14751080-7ace-11eb-91cf-fd75bc63d13b.mp4
+
+
