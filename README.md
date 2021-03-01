@@ -57,6 +57,5 @@ Known bugs are currently that:
 ## SneakPeeks
 
 LeaderBoards -
-
-![](https://imgur.com/NK1XYQ2)
+https://youtu.be/5FTQqZNwDOY -
 
