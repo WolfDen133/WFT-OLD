@@ -447,15 +447,10 @@ class Main extends PluginBase implements Listener{
         $nbt->setShort("Health", 1);
         $nbt->setString("CustomName", $name);
         $nbt->setString("FTName", $ftname);
-        if ($type === "WFloatingText") {
-            $player->saveNBT();
-            $inventoryTag = $player->namedtag->getListTag("Inventory");
-            assert($inventoryTag !== null);
-            $nbt->setTag(clone $inventoryTag);
-            $skinTag = $player->namedtag->getCompoundTag("Skin");
-            assert($skinTag !== null);
-            $nbt->setTag(clone $skinTag);
-        }
+        $skin = new Skin("Standard_Custom", str_repeat("\x00", 8192));
+        $nbt->setTag(new CompoundTag("Skin", [
+            "Data" => new StringTag("Data", $skin->getSkinData()),
+            "Name" => new StringTag("Name", $skin->getSkinId())]));
         return $nbt;
     }
 
