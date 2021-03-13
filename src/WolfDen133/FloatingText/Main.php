@@ -6,7 +6,9 @@ namespace WolfDen133\FloatingText;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+
 use pocketmine\entity\Entity;
+use pocketmine\entity\Skin;
 
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
