@@ -1,10 +1,11 @@
 [![](https://poggit.pmmp.io/shield.state/Wolfies-FloatingText)](https://poggit.pmmp.io/p/Wolfies-FloatingText) [![](https://poggit.pmmp.io/shield.dl/Wolfies-FloatingText)](https://poggit.pmmp.io/p/Wolfies-FloatingText)
-# WFT 1.3.2
+# WFT 1.3.5
 
 Whats new? 
 
 Added: 
   Refresh timer, tags(as seen below), config saving/editing, /ft reload command, /ft name command (gets the name of the ft when clicked), added the ability to do all the       functions from commands, added the help subcommand, added leave {gap} blank to default to 3.
+  
   Bug fixes, still more tho.
   
   ### Tags
@@ -53,6 +54,8 @@ Known bugs are currently that:
  - Will sometimes move text slightly when reloading (fixed)
  - Will sometiems dupe the texts (fixed)
  - Will give internal server error on no args (fixed)
+ - Will sometimes give error about skins (fixed)
+ - Will sometimes give error about directory (fixed)
 
 ## SneakPeeks
 
