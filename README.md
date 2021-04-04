@@ -33,16 +33,17 @@ Feel free to message me on discord as well [WolfDen133#4974](https://dsc.bio/Wol
 
 Master command is ft|wft.master
 
-Subcommand | Permission
----------|----------
-add|wft.add
-remove|wft.remove
-edit|wft.edit
-tp|wft.tp
-tphere|wft.tphere
-reload|wft.reload
-name|wft.name
-help|wft.help
+Subcommand | Permission | Description | Aliases
+---------|----------|----------|---------
+`ft`|`wft.master`|The master command| `wft`
+`add`|`wft.add`|Add a new ft| `spawn`, `summon`, `new`, `make`, `create`, `c`, `a`
+`remove`|`wft.remove`|Remove a existing ft| `break`, `delete`, `bye`, `d`, `r`, 
+`edit`|`wft.edit`|Edit an existiong ft| `e`
+`tp`|`wft.tp`|Teleport to an ft| `teleportto`, `tpto`, `goto`, `teleport`
+`tphere`|`wft.tphere`|Teleport a ft to you| `teleporthere`, `movehere`, `bringhere`, `tph`
+`reload`|`wft.reload`|Reload all the floating texts from config| ~
+`name`|`wft.name`|Find the name of a ft by tapping it| `id`, `whois`, `n`, 
+`help`|`wft.help`|So you can get some in-game help| `stuck`, `h`, `?`
 
   ### Tags
 
