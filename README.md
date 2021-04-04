@@ -1,5 +1,5 @@
 [![](https://poggit.pmmp.io/shield.state/Wolfies-FloatingText)](https://poggit.pmmp.io/p/Wolfies-FloatingText) [![](https://poggit.pmmp.io/shield.dl/Wolfies-FloatingText)](https://poggit.pmmp.io/p/Wolfies-FloatingText)
-# WFT 1.3.5
+# WFT 1.0.0-RELEASE
 
 Whats new? 
 
@@ -60,5 +60,5 @@ Known bugs are currently that:
 ## SneakPeeks
 
 LeaderBoards -
-https://youtu.be/5FTQqZNwDOY -
+https://youtu.be/5FTQqZNwDOY
 
