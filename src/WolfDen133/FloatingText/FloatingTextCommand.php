@@ -172,7 +172,7 @@ class FloatingTextCommand extends Command implements PluginIdentifiableCommand {
         }
     }
    
-    public function getPlugin(): Plugin
+    public function getPlugin(): Main
     {
         return $this->plugin;
     }
