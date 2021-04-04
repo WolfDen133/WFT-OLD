@@ -480,11 +480,16 @@ class Main extends PluginBase implements Listener{
                 $y = (float)$value->get("y") + (int)$value->get("gap")/10;
                 $z = (float)$value->get("z");
                 $level = (string)$value->get("level");
-                foreach ((array) $value->get("lines") as $line){
-                    $y = $y - (int)$value->get("gap")/10;
-                    $this->createText($name, (string)$line, $sender, $x, $y, $z, $level);
+                foreach ($this->getServer()->getLevels() as $lname) {
+                    $lname = $lname->getName();
+                    if ($level === $lname) {
+                        foreach ((array) $value->get("lines") as $line){
+                            $y = $y - (int)$value->get("gap")/10;
+                            $this->createText($name, (string)$line, $event->getPlayer(), $x, $y, $z, $level);
+                        }
+                        $this->fts[$name] = implode("#", (array)$value->get("lines"));
+                    } 
                 }
-                $this->fts[$name] = implode("#", (array)$value->get("lines"));
             }
         }
     }
@@ -581,11 +586,16 @@ class Main extends PluginBase implements Listener{
                     $z = (float)$value->get("z");
                     $level = (string)$value->get("level");
                     // $this->getServer()->getLogger()->notice("Found the text $name with the text " . implode("#", $value->get("lines")) . " at $x, $y, $z, in the level $level");
-                    foreach ((array) $value->get("lines") as $line){
-                        $y = $y - (int)$value->get("gap")/10;
-                        $this->createText($name, (string)$line, $event->getPlayer(), $x, $y, $z, $level);
+                    foreach ($this->getServer()->getLevels() as $lname) {
+                        $lname = $lname->getName();
+                        if ($level === $lname) {
+                            foreach ((array) $value->get("lines") as $line){
+                                $y = $y - (int)$value->get("gap")/10;
+                                $this->createText($name, (string)$line, $event->getPlayer(), $x, $y, $z, $level);
+                            }
+                            $this->fts[$name] = implode("#", (array)$value->get("lines"));
+                        } 
                     }
-                    $this->fts[$name] = implode("#", (array)$value->get("lines"));
                 }
             }
         }
