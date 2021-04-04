@@ -485,7 +485,7 @@ class Main extends PluginBase implements Listener{
                     if ($level === $lname) {
                         foreach ((array) $value->get("lines") as $line){
                             $y = $y - (int)$value->get("gap")/10;
-                            $this->createText($name, (string)$line, $event->getPlayer(), $x, $y, $z, $level);
+                            $this->createText($name, (string)$line, $sender, $x, $y, $z, $level);
                         }
                         $this->fts[$name] = implode("#", (array)$value->get("lines"));
                     } 
