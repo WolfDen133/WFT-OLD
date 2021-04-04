@@ -18,7 +18,7 @@ class FloatingTextCommand extends Command implements PluginIdentifiableCommand {
     {
         $this->plugin = $plugin;
 
-        parent::__construct("ft", "Master floating text command", "/ft add/remove/edit", ["floatingtext"]);
+        parent::__construct("ft", "Master floating text command", "/ft add/remove/edit", ["floatingtext", "wft", "wolfiesfloatingtext"]);
         $this->setPermission("wft.master");
     }
 
@@ -39,7 +39,7 @@ class FloatingTextCommand extends Command implements PluginIdentifiableCommand {
                             if ($sender->hasPermission("wft.add")) {
                                 if (count($args) === 1) {
                                     $this->plugin->openCreation($sender);
-                                } elseif (count($args) > 3) {
+                                } elseif (count($args) >= 3) {
                                     $ftname = $args[1];
                                     if (is_numeric($args[2])) {
                                         $gap = $args[2];
@@ -151,6 +151,7 @@ class FloatingTextCommand extends Command implements PluginIdentifiableCommand {
                         case "help":
                         case "stuck":
                         case "h":
+                        case "?":
                             if ($sender->hasPermission("wft.help")) {
                                 $this->plugin->openHelp($sender);
                             } else {
