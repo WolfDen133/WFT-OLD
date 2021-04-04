@@ -5,10 +5,11 @@ namespace WolfDen133\FloatingText;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
+use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
-class FloatingTextCommand extends Command {
+class FloatingTextCommand extends Command implements PluginIdentifiableCommand {
 
     /* @var Main */
     public $plugin;
@@ -169,5 +170,10 @@ class FloatingTextCommand extends Command {
         } else {
             $sender->sendMessage(TextFormat::GRAY . "This command is for players only");
         }
+    }
+   
+    public function getPlugin(): Plugin
+    {
+        return $this->plugin;
     }
 }
