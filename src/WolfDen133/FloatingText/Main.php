@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+// I think that poggit is broken xD
 
 namespace WolfDen133\FloatingText;
 
