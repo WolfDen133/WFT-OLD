@@ -599,6 +599,5 @@ class Main extends PluginBase implements Listener{
                 }
             }
         }
-        $this->reloadTexts($event->getPlayer());
     }
 }
