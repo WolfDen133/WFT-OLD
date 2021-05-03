@@ -1,6 +1,17 @@
 [![](https://poggit.pmmp.io/shield.state/Wolfies-FloatingText)](https://poggit.pmmp.io/p/Wolfies-FloatingText) [![](https://poggit.pmmp.io/shield.dl/Wolfies-FloatingText)](https://poggit.pmmp.io/p/Wolfies-FloatingText)
 # WFT 1.0.0-RELEASE
 
+A message from the dev:
+
+  I have a lot on my plate of the moment so am currently unable to update this plugin, the plugin also has lots of development tools encluded, so is kinda buggy. I will be         coding a new ft Plugin but am not sure when I will finish development, this plugin will enclude:
+
+  - A custom addon system, much like ScordHud
+  - Better coded main with separate API and Listener files 
+  - Other added features that need adding
+
+  But for now this will be the last update for now, if you wish to add features to the current build open a pull request and I'll look through and merge if appropreate.
+   
+
 ## Info
 WFT is a custom floating text plugin for pocketmine 3.0.0 and up.
 
