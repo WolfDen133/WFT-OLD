@@ -1,5 +1,5 @@
 [![](https://poggit.pmmp.io/shield.state/Wolfies-FloatingText)](https://poggit.pmmp.io/p/Wolfies-FloatingText) [![](https://poggit.pmmp.io/shield.dl/Wolfies-FloatingText)](https://poggit.pmmp.io/p/Wolfies-FloatingText)
-# WFT 1.0.0-RELEASE
+# WFT 1.0.0-OLD
 
 A message from the dev:
 
